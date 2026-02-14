@@ -20,6 +20,7 @@ export type FluentMessageId =
   | 'prefs-table-detail'
   | 'prefs-table-title'
   | 'prefs-title'
+  | 'reading-report-menu-label'
   | 'startup-begin'
   | 'startup-finish'
   | 'tabpanel-lib-tab-label'

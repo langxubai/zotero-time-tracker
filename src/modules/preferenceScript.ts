@@ -1,7 +1,9 @@
 import { config } from "../../package.json";
 import { getString } from "../utils/locale";
+import type Addon from "../addon";
 
 export async function registerPrefsScripts(_window: Window) {
+  const addon = (Zotero as any)[config.addonInstance] as Addon;
   // This function is called when the prefs window is opened
   // See addon/content/preferences.xhtml onpaneload
   if (!addon.data.prefs) {
@@ -19,20 +21,7 @@ export async function registerPrefsScripts(_window: Window) {
           label: getString("prefs-table-detail"),
         },
       ],
-      rows: [
-        {
-          title: "Orange",
-          detail: "It's juicy",
-        },
-        {
-          title: "Banana",
-          detail: "It's sweet",
-        },
-        {
-          title: "Apple",
-          detail: "I mean the fruit APPLE",
-        },
-      ],
+      rows: [],
     };
   } else {
     addon.data.prefs.window = _window;
@@ -45,6 +34,7 @@ async function updatePrefsUI() {
   // You can initialize some UI elements on prefs window
   // with addon.data.prefs.window.document
   // Or bind some events to the elements
+  const addon = (Zotero as any)[config.addonInstance] as Addon;
   const renderLock = ztoolkit.getGlobal("Zotero").Promise.defer();
   if (addon.data.prefs?.window == undefined) return;
   const tableHelper = new ztoolkit.VirtualizedTable(addon.data.prefs?.window)
@@ -107,6 +97,7 @@ async function updatePrefsUI() {
 }
 
 function bindPrefEvents() {
+  const addon = (Zotero as any)[config.addonInstance] as Addon;
   addon.data
     .prefs!.window.document?.querySelector(
       `#zotero-prefpane-${config.addonRef}-enable`,
