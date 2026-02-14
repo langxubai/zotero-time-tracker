@@ -1,6 +1,7 @@
 import { BasicTool } from "zotero-plugin-toolkit";
 import Addon from "./addon";
 import { config } from "../package.json";
+import hooks from "./hooks";
 
 const basicTool = new BasicTool();
 
@@ -23,3 +24,5 @@ function defineGlobal(name: string, getter?: () => any) {
     },
   });
 }
+
+export default hooks;

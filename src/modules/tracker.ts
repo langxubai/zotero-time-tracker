@@ -1,5 +1,11 @@
 import { ReadingTimeStorage } from "./storage";
 
+function setTimeout(callback: () => void, delay: number) {
+    const win = Zotero.getMainWindow();
+    if (win) win.setTimeout(callback, delay);
+}
+
+
 export class ReadingTimeTracker {
     private storage: ReadingTimeStorage;
     private currentItemID: number | null = null;
@@ -68,8 +74,8 @@ export class ReadingTimeTracker {
 
             // Fallback: if selectedTab is null but we have a specific ID from notify
             if (!tab && specificTabID) {
-                if (typeof zTabs.getTab === 'function') {
-                    const fallbackTab = zTabs.getTab(specificTabID);
+                if (typeof zTabs._getTab === 'function') {
+                    const fallbackTab = zTabs._getTab(specificTabID);
                     if (fallbackTab) {
                         tab = fallbackTab;
                         Zotero.debug(`[ReadingTimeTracker] Using fallback tab from ID ${specificTabID}`);

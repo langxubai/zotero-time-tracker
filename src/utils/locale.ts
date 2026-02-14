@@ -1,5 +1,9 @@
+import { BasicTool } from "zotero-plugin-toolkit";
 import { config } from "../../package.json";
 import { FluentMessageId } from "../../typings/i10n";
+import type Addon from "../addon";
+
+const basicTool = new BasicTool();
 
 export { initLocale, getString, getLocaleID };
 
@@ -9,12 +13,17 @@ export { initLocale, getString, getLocaleID };
 function initLocale() {
   const l10n = new (
     typeof Localization === "undefined"
-      ? ztoolkit.getGlobal("Localization")
+      ? basicTool.getGlobal("Localization")
       : Localization
   )([`${config.addonRef}-addon.ftl`], true);
-  addon.data.locale = {
-    current: l10n,
-  };
+  const pluginInstance = (Zotero as any)[config.addonInstance] as Addon;
+  if (pluginInstance) {
+    pluginInstance.data.locale = {
+      current: l10n,
+    };
+  } else {
+    Zotero.logError(new Error(`[${config.addonName}] Addon instance not found in initLocale`));
+  }
 }
 
 /**
@@ -68,13 +77,19 @@ interface Pattern {
   }> | null;
 }
 
+
 function _getString(
   localeString: FluentMessageId,
   options: { branch?: string | undefined; args?: Record<string, unknown> } = {},
 ): string {
+  const pluginInstance = (Zotero as any)[config.addonInstance] as Addon;
+  if (!pluginInstance) {
+    Zotero.logError(new Error(`[${config.addonName}] Addon instance not found in _getString`));
+    return `${config.addonRef}-${localeString}`;
+  }
   const localStringWithPrefix = `${config.addonRef}-${localeString}`;
   const { branch, args } = options;
-  const pattern = addon.data.locale?.current.formatMessagesSync([
+  const pattern = pluginInstance.data.locale?.current.formatMessagesSync([
     { id: localStringWithPrefix, args },
   ])[0] as Pattern;
 
